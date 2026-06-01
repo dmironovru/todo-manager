@@ -1,0 +1,289 @@
+/* ==============================================
+   ТЕМНЫЙ СТИЛЬ В СТИЛЕ DMITRYMIRONOV.RU
+   ============================================== */
+
+/* Базовые переменные */
+:root {
+  --bg-dark: #0a0a0a;
+  --bg-card: rgba(15, 15, 15, 0.85);
+  --text-primary: #ededed;
+  --text-secondary: #9ca3af;
+  --accent: #764C94;
+  --accent-hover: #8b6ba8;
+  --accent-glow: rgba(118, 76, 148, 0.5);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --success: #10b981;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg-dark);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Кастомный скроллбар (как на основном сайте) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+/* Основной контейнер */
+.App {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+/* Стеклянная карточка (как на сайте) */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+  border-radius: 2rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
+}
+
+/* Заголовок */
+.header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 0.75rem;
+}
+
+/* Форма добавления */
+.add-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.add-form input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
+  border-radius: 0.75rem;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.add-form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.add-form input::placeholder {
+  color: var(--text-secondary);
+}
+
+.add-form button {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.add-form button:hover {
+  background: var(--accent-hover);
+  transform: scale(1.02);
+}
+
+/* Статистика */
+.stats-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.task-count {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.clear-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+}
+
+.clear-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* Сообщение об ошибке */
+.error-message {
+  background: rgba(239, 68, 68, 0.15);
+  border-left: 4px solid var(--danger);
+  color: #f87171;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* Список задач */
+.tasks-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tasks-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+}
+
+.tasks-list li:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(118, 76, 148, 0.3);
+}
+
+.tasks-list li.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+/* Чекбокс */
+.task-checkbox {
+  width: 1.2rem;
+  height: 1.2rem;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* Текст задачи */
+.task-title {
+  flex: 1;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Поле редактирования */
+.edit-input {
+  flex: 1;
+  padding: 0.4rem 0.75rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+}
+
+.edit-input:focus {
+  outline: none;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Кнопки действий */
+.edit-btn, .delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  color: var(--text-secondary);
+}
+
+.edit-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent);
+}
+
+.delete-btn {
+  color: var(--text-secondary);
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--danger);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+  .App {
+    margin: 0.5rem;
+    padding: 0.75rem;
+  }
+  
+  .glass-card {
+    padding: 1rem;
+    border-radius: 1.5rem;
+  }
+  
+  .header h1 {
+    font-size: 1.4rem;
+  }
+  
+  .add-form button {
+    padding: 0.75rem 1rem;
+  }
+}
