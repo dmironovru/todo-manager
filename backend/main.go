@@ -5,6 +5,7 @@ import (
     "encoding/json"
     "log"
     "net/http"
+    "os"
     "strconv"
     "time"
     "github.com/jackc/pgx/v5/pgxpool"
@@ -19,7 +20,14 @@ type Task struct {
 var db *pgxpool.Pool
 
 func main() {
-    connString := "postgres://todo_user:todo123321odot@localhost:5432/todo_db"
+    // Берём строку подключения из переменной окружения
+    connString := os.Getenv("DATABASE_URL")
+    if connString == "" {
+        // fallback для локального запуска (вне Docker)
+        connString = "postgres://todo_user:todo123321odot@localhost:5432/todo_db"
+    }
+    
+    log.Printf("Connecting to database...")
     
     config, err := pgxpool.ParseConfig(connString)
     if err != nil {
@@ -42,15 +50,41 @@ func main() {
     }
     
     log.Println("Connected to PostgreSQL (connection pool ready)")
+    
+    // Создаём таблицу, если её нет
+    initDB()
 
+    // Healthcheck эндпоинт
+    http.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("OK"))
+    })
+    
     http.HandleFunc("GET /api/tasks", corsMiddleware(getTasks))
     http.HandleFunc("POST /api/tasks", corsMiddleware(createTask))
     http.HandleFunc("PUT /api/tasks/{id}", corsMiddleware(updateTask))
     http.HandleFunc("DELETE /api/tasks/{id}", corsMiddleware(deleteTask))
     http.HandleFunc("DELETE /api/tasks", corsMiddleware(clearTasks))
 
-    log.Println("Сервер запущен на :8080")
+    log.Println("Server started on :8080")
     log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// initDB создаёт таблицу tasks, если она не существует
+func initDB() {
+    query := `
+    CREATE TABLE IF NOT EXISTS tasks (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        completed BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    `
+    _, err := db.Exec(context.Background(), query)
+    if err != nil {
+        log.Fatal("Failed to create table:", err)
+    }
+    log.Println("Database schema ready")
 }
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
