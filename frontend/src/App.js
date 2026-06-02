@@ -33,12 +33,8 @@ function App() {
       setNewTask('');
       fetchTasks();
     } catch (err) {
-      if (err.response && err.response.status === 403) {
-        setErrorMessage('❌ Достигнут лимит — максимум 10 задач');
-      } else {
-        console.error('Ошибка добавления:', err);
-        setErrorMessage('Ошибка добавления задачи');
-      }
+      console.error('Ошибка добавления:', err);
+      setErrorMessage('Ошибка добавления задачи');
     }
   };
 
@@ -97,7 +93,7 @@ function App() {
     <div className="App">
       <div className="header">
         <h1>📋 Менеджер задач</h1>
-        <div className="subtitle">React + Go + PostgreSQL (максимум 10 задач)</div>
+        <div className="subtitle">React + Go + PostgreSQL + Docker</div>
       </div>
 
       <div className="add-form">
