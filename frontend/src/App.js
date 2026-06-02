@@ -18,11 +18,18 @@ function App() {
   const fetchTasks = async () => {
     try {
       const res = await axios.get(API_BASE);
-      setTasks(res.data);
+      // Защита: убеждаемся, что данные — массив
+      if (Array.isArray(res.data)) {
+        setTasks(res.data);
+      } else {
+        console.error('API вернул не массив:', res.data);
+        setTasks([]);
+      }
       setErrorMessage('');
     } catch (err) {
       console.error('Ошибка загрузки:', err);
       setErrorMessage('Ошибка загрузки задач');
+      setTasks([]);
     }
   };
 
@@ -87,7 +94,9 @@ function App() {
     }
   };
 
-  const completedCount = tasks.filter(t => t.completed).length;
+  // Защита: если tasks не массив, показываем 0
+  const completedCount = Array.isArray(tasks) ? tasks.filter(t => t.completed).length : 0;
+  const tasksLength = Array.isArray(tasks) ? tasks.length : 0;
 
   return (
     <div className="App">
@@ -112,14 +121,14 @@ function App() {
       )}
 
       <div className="stats-bar">
-        <span className="task-count">📌 Всего: {tasks.length} | ✅ Выполнено: {completedCount}</span>
-        {tasks.length > 0 && (
+        <span className="task-count">📌 Всего: {tasksLength} | ✅ Выполнено: {completedCount}</span>
+        {tasksLength > 0 && (
           <button className="clear-btn" onClick={clearAllTasks}>🗑 Очистить всё</button>
         )}
       </div>
 
       <ul className="tasks-list">
-        {tasks.map(task => (
+        {Array.isArray(tasks) && tasks.map(task => (
           <li key={task.id} className={task.completed ? 'completed' : ''}>
             {editingId === task.id ? (
               <input
