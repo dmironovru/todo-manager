@@ -1,4 +1,5 @@
-### 🚀 Todo Manager — приложение на React + Go + PostgreSQL
+```markdown
+# 🚀 Todo Manager — Fullstack приложение на React + Go + PostgreSQL
 
 Простой и надёжный менеджер задач без ограничения задач.
 
@@ -7,27 +8,20 @@
 ## 📸 Скриншоты
 
 ### Запуск через терминал
-<<<<<<< HEAD
-![Запуск](https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/1.png)
-
-### Интерфейс приложения
-![Интерфейс](https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/2.png)
-=======
 <img src="https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/start-terminal.png" alt="Запуск" width="600"/>
 
 ### Интерфейс приложения
 <img src="https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/app-interface.png" alt="Интерфейс" width="600"/>
 
 ---
->>>>>>> b34b9d5 (Rename screenshots and fix image paths in README)
 
-### 🎯 Возможности
+## 🎯 Возможности
 
 - ✅ **Создание задач** — добавление новых задач с валидацией
 - ✅ **Редактирование задач** — изменение текста задачи (двойной клик или кнопка ✏️)
 - ✅ **Отметка о выполнении** — чекбокс для каждой задачи
 - ✅ **Удаление задач** — удаление одной задачи или всех сразу
-- ✅ **Ограничение 10 активных задач** — нельзя добавить больше 10 невыполненных задач
+- ✅ **Без ограничений на количество задач** — можно добавлять сколько угодно
 - ✅ **Подтверждение очистки** — перед удалением всех задач запрашивается подтверждение
 - ✅ **Статистика** — отображение общего количества и выполненных задач
 - ✅ **Обработка ошибок** — все ошибки выводятся в интерфейс
@@ -35,7 +29,7 @@
 
 ---
 
-### 🛠️ Технологический стек
+## 🛠️ Технологический стек
 
 | Компонент | Технология |
 |-----------|------------|
@@ -47,7 +41,7 @@
 
 ---
 
-### 📁 Структура проекта
+## 📁 Структура проекта
 
 ```
 todo-manager/
@@ -73,7 +67,7 @@ todo-manager/
 
 ---
 
-### 🐳 Как работает бэкенд
+## 🐳 Как работает бэкенд
 
 **Файл:** `backend/main.go`
 
@@ -100,8 +94,9 @@ CREATE TABLE tasks (
 );
 ```
 
+---
 
-### 🎨 Как работает фронтенд
+## 🎨 Как работает фронтенд
 
 **Файл:** `frontend/src/App.js`
 
@@ -122,7 +117,7 @@ React-приложение использует **Axios** для HTTP-запро
 
 ---
 
-### 🐳 Архитектура (Docker Compose)
+## 🐳 Архитектура (Docker Compose)
 
 **Файл:** `docker-compose.yml`
 
@@ -145,7 +140,7 @@ REACT_APP_API_URL=http://localhost:8080/api
 
 ---
 
-### 🚀 Запуск
+## 🚀 Запуск
 
 ```bash
 # Клонирование
@@ -160,18 +155,20 @@ cd todo-manager
 ```
 
 **После запуска:**  
-- Фронтенд: `http://localhost:3000`  
+- Фронтенд: `http://localhost:3000`
 - Бэкенд: `http://localhost:8080`
 
 ---
 
-### 👤 Автор
+## 👤 Автор
 
 **Дмитрий Миронов**  
 GitHub: [dmironovru](https://github.com/dmironovru)
+website: dmitrymironov.ru
 
 ---
 
-### 📄 Лицензия
+## 📄 Лицензия
 
 MIT License
+```
