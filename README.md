@@ -7,7 +7,11 @@
 
 ## 📸 Скриншоты
 
-Скриншоты проекта доступны в папке [`docs/`](https://github.com/dmironovru/todo-manager/tree/main/docs).
+### Запуск через терминал
+![Запуск](./screenshots/start-terminal.png)
+
+### Интерфейс приложения
+![Интерфейс](./screenshots/app-interface.png)
 
 ---
 
