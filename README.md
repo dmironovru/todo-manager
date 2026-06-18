@@ -1,4 +1,4 @@
-### 🚀 Todo Manager — Fullstack приложение на React + Go + PostgreSQL
+### 🚀 Todo Manager — приложение на React + Go + PostgreSQL
 
 Простой и надёжный менеджер задач без ограничения задач.
 
