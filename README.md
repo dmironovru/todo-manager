@@ -8,10 +8,10 @@
 ## 📸 Скриншоты
 
 ### Запуск через терминал
-![Запуск](https://dmironovru.github.io/todo-manager/start-terminal.png)
+![Запуск](./docs/start-terminal.png)
 
 ### Интерфейс приложения
-![Интерфейс](https://dmironovru.github.io/todo-manager/app-interface.png)
+![Интерфейс](./docs/app-interface.png)
 
 ---
 
