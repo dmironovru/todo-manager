@@ -1,33 +1,176 @@
-# 🚀 Todo Manager
+## 📋 Todo Manager — Полный README
 
-Простой менеджер задач с ограничением на 10 задач.
+Отличная структура! У тебя **backend/main.go** лежит прямо в папке `backend/`, а не в `backend/cmd/api/`. Сейчас всё опишу.
 
-**Демо:** [https://dmitrymironov.ru/lab/](https://dmitrymironov.ru/lab/)
+---
 
-## 🛠 Стек
-- 🎨 Frontend: React 19 (Create React App)
-- 🐹 Backend: Go 1.22 + PostgreSQL 16
-- 🐳 Опционально: Docker Compose
+### 🚀 Todo Manager — Fullstack приложение на React + Go + PostgreSQL
 
-## 🚀 Быстрый старт
+Простой и надёжный менеджер задач без ограничения задач.
 
-### Вариант А: Через Docker
+---
+
+### 📸 Скриншоты
+
+#### Запуск через терминал
+![Запуск](./screenshots/1.png)
+
+#### Интерфейс приложения
+![Интерфейс](./screenshots/2.png)
+
+---
+
+### 🎯 Возможности
+
+- ✅ **Создание задач** — добавление новых задач с валидацией
+- ✅ **Редактирование задач** — изменение текста задачи (двойной клик или кнопка ✏️)
+- ✅ **Отметка о выполнении** — чекбокс для каждой задачи
+- ✅ **Удаление задач** — удаление одной задачи или всех сразу
+- ✅ **Ограничение 10 активных задач** — нельзя добавить больше 10 невыполненных задач
+- ✅ **Подтверждение очистки** — перед удалением всех задач запрашивается подтверждение
+- ✅ **Статистика** — отображение общего количества и выполненных задач
+- ✅ **Обработка ошибок** — все ошибки выводятся в интерфейс
+- ✅ **Готов к деплою** — Docker Compose поднимает всё одной командой
+
+---
+
+### 🛠️ Технологический стек
+
+| Компонент | Технология |
+|-----------|------------|
+| **Frontend** | React 19, Axios, CSS (Create React App) |
+| **Backend** | Go 1.22, Fiber, pgx |
+| **База данных** | PostgreSQL 16 |
+| **Контейнеризация** | Docker, Docker Compose |
+| **Прокси** | Nginx |
+
+---
+
+### 📁 Структура проекта
+
+```
+todo-manager/
+├── backend/
+│   ├── main.go              # Основной файл бэкенда
+│   ├── go.mod               # Go-модуль
+│   ├── Dockerfile           # Образ для бэкенда
+│   └── todo-api             # Скомпилированный бинарник
+├── frontend/
+│   ├── src/
+│   │   ├── App.js           # Главный React-компонент
+│   │   ├── App.css          # Стили
+│   │   └── index.js         # Точка входа
+│   ├── public/              # Статика
+│   ├── package.json         # Зависимости
+│   ├── Dockerfile           # Образ для фронтенда
+│   └── nginx.conf           # Конфиг Nginx
+├── docker-compose.yml       # Оркестрация сервисов
+├── start.sh / stop.sh       # Скрипты управления
+├── screenshots/             # Скриншоты
+└── README.md
+```
+
+---
+
+### 🐳 Как работает бэкенд
+
+**Файл:** `backend/main.go`
+
+Бэкенд написан на Go с использованием фреймворка **Fiber** и драйвера **pgx** для PostgreSQL.
+
+**Основные эндпоинты:**
+
+| Метод | Эндпоинт | Описание |
+|-------|----------|----------|
+| `GET` | `/api/tasks` | Получение всех задач |
+| `POST` | `/api/tasks` | Создание новой задачи |
+| `PUT` | `/api/tasks/:id` | Обновление задачи (текст или статус) |
+| `DELETE` | `/api/tasks/:id` | Удаление задачи по ID |
+| `DELETE` | `/api/tasks` | Удаление всех задач |
+
+**Структура задачи (PostgreSQL):**
+
+```sql
+CREATE TABLE tasks (
+    id          SERIAL PRIMARY KEY,
+    title       TEXT NOT NULL,
+    completed   BOOLEAN DEFAULT FALSE,
+    created_at  TIMESTAMP DEFAULT NOW()
+);
+```
+
+
+### 🎨 Как работает фронтенд
+
+**Файл:** `frontend/src/App.js`
+
+React-приложение использует **Axios** для HTTP-запросов к бэкенду.
+
+**Главные компоненты:**
+
+| Компонент | Описание |
+|-----------|----------|
+| **Список задач** | Отображает все задачи из БД |
+| **Форма добавления** | Поле ввода + кнопка «Добавить» (Enter для отправки) |
+| **Чекбокс** | Изменяет статус `completed` |
+| **Редактирование** | Двойной клик или кнопка ✏️ для редактирования |
+| **Удаление** | Кнопка 🗑️ для каждой задачи |
+| **Очистка всех** | Кнопка «Очистить всё» с подтверждением |
+| **Статистика** | Отображение общего количества и выполненных задач |
+| **Ошибки** | Вывод ошибок в интерфейс |
+
+---
+
+### 🐳 Архитектура (Docker Compose)
+
+**Файл:** `docker-compose.yml`
+
+Три контейнера:
+
+1. **PostgreSQL** — база данных
+2. **Backend (Go)** — API-сервер
+3. **Frontend (React + Nginx)** — статическая сборка React, обслуживаемая Nginx
+
+**Переменные окружения:**
+
+```env
+# Backend
+DATABASE_URL=postgres://todo_user:todo_pass@db:5432/todo_db
+PORT=8080
+
+# Frontend
+REACT_APP_API_URL=http://localhost:8080/api
+```
+
+---
+
+### 🚀 Запуск
+
 ```bash
-git clone <repo> && cd todo-manager
-docker compose up -d
-# Открой: 🌐 http://localhost:3000/lab
+# Клонирование
+git clone https://github.com/dmironovru/todo-manager.git
+cd todo-manager
 
+# Запуск
+./start.sh
 
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-COPY . .
-ENV PUBLIC_URL=/lab
-RUN npm run build
+# Остановка
+./stop.sh
+```
 
-FROM nginx:alpine
-COPY --from=builder /app/build /usr/share/nginx/html/lab
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+**После запуска:**  
+- Фронтенд: `http://localhost:3000`  
+- Бэкенд: `http://localhost:8080`
+
+---
+
+### 👤 Автор
+
+**Дмитрий Миронов**  
+GitHub: [dmironovru](https://github.com/dmironovru)
+
+---
+
+### 📄 Лицензия
+
+MIT License
