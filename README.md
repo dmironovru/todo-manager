@@ -6,11 +6,11 @@
 
 ## 📸 Скриншоты
 
-![Запуск](./screenshots/1.png)
+### Запуск через терминал
+![Запуск](https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/1.png)
 
-![Интерфейс](./screenshots/2.png)
-
----
+### Интерфейс приложения
+![Интерфейс](https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/2.png)
 
 ### 🎯 Возможности
 
