@@ -7,10 +7,19 @@
 ## 📸 Скриншоты
 
 ### Запуск через терминал
+<<<<<<< HEAD
 ![Запуск](https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/1.png)
 
 ### Интерфейс приложения
 ![Интерфейс](https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/2.png)
+=======
+<img src="https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/start-terminal.png" alt="Запуск" width="600"/>
+
+### Интерфейс приложения
+<img src="https://raw.githubusercontent.com/dmironovru/todo-manager/main/screenshots/app-interface.png" alt="Интерфейс" width="600"/>
+
+---
+>>>>>>> b34b9d5 (Rename screenshots and fix image paths in README)
 
 ### 🎯 Возможности
 
