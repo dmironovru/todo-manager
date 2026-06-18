@@ -1,9 +1,3 @@
-## 📋 Todo Manager — Полный README
-
-Отличная структура! У тебя **backend/main.go** лежит прямо в папке `backend/`, а не в `backend/cmd/api/`. Сейчас всё опишу.
-
----
-
 ### 🚀 Todo Manager — Fullstack приложение на React + Go + PostgreSQL
 
 Простой и надёжный менеджер задач без ограничения задач.
