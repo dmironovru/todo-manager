@@ -7,11 +7,7 @@
 
 ## 📸 Скриншоты
 
-### Запуск через терминал
-![Запуск](https://raw.githubusercontent.com/dmironovru/todo-manager/main/docs/start-terminal.png)
-
-### Интерфейс приложения
-![Интерфейс](https://raw.githubusercontent.com/dmironovru/todo-manager/main/docs/app-interface.png)
+Скриншоты проекта доступны в папке [`docs/`](https://github.com/dmironovru/todo-manager/tree/main/docs).
 
 ---
 
