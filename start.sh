@@ -79,13 +79,16 @@ if [ -f "docker-compose.yml" ]; then
     log "Запуск через Docker Compose..."
     docker compose up -d
     echo ""
-    echo -e "${GREEN}╔════════════════════════╗${NC}"
-    echo -e "${GREEN}║  🚀 Todo запущен!       ║${NC}"
-    echo -e "${GREEN}╠════════════════════════╣${NC}"
-    echo -e "${GREEN}║  🌐 http://localhost:3000/lab  ║${NC}"
-    echo -e "${GREEN}║  🔌 http://localhost:8080      ║${NC}"
-    echo -e "${GREEN}║  🛑 docker compose down        ║${NC}"
-    echo -e "${GREEN}╚════════════════════════╝${NC}"
+    echo -e "${GREEN}╔══════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║  🚀 Todo Manager запущен!               ║${NC}"
+    echo -e "${GREEN}╠══════════════════════════════════════════╣${NC}"
+    echo -e "${GREEN}║  🌐 Открой в браузере:                  ║${NC}"
+    echo -e "${GREEN}║     http://localhost:3000               ║${NC}"
+    echo -e "${GREEN}║                                         ║${NC}"
+    echo -e "${GREEN}║  🛑 Остановка:                          ║${NC}"
+    echo -e "${GREEN}║     docker compose down                 ║${NC}"
+    echo -e "${GREEN}║     или ./stop.sh                      ║${NC}"
+    echo -e "${GREEN}╚══════════════════════════════════════════╝${NC}"
     exit 0
 fi
 
@@ -109,12 +112,15 @@ sleep 3
 info "Фронтенд на порту 3000 ✅"
 
 echo ""
-echo -e "${GREEN}╔════════════════════════╗${NC}"
-echo -e "${GREEN}║  🚀 Todo запущен!       ║${NC}"
-echo -e "${GREEN}╠════════════════════════╣${NC}"
-echo -e "${GREEN}║  🌐 http://localhost:3000/lab  ║${NC}"
-echo -e "${GREEN}║  💡 Ctrl+C для остановки ║${NC}"
-echo -e "${GREEN}╚════════════════════════╝${NC}"
+echo -e "${GREEN}╔══════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║  🚀 Todo Manager запущен!               ║${NC}"
+echo -e "${GREEN}╠══════════════════════════════════════════╣${NC}"
+echo -e "${GREEN}║  🌐 Открой в браузере:                  ║${NC}"
+echo -e "${GREEN}║     http://localhost:3000               ║${NC}"
+echo -e "${GREEN}║                                         ║${NC}"
+echo -e "${GREEN}║  🛑 Остановка:                          ║${NC}"
+echo -e "${GREEN}║     Нажми Ctrl+C                        ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════╝${NC}"
 
 while kill -0 $BACKEND_PID $FRONTEND_PID 2>/dev/null; do sleep 5; done
 cleanup
