@@ -20,41 +20,63 @@ cleanup() {
 }
 trap cleanup SIGINT SIGTERM
 
-# === ПРОВЕРКА DOCKER ===
-if command -v docker >/dev/null 2>&1 && [ -f "docker-compose.yml" ]; then
-    log "Обнаружен Docker"
+# === ПРОВЕРКА НАЛИЧИЯ DOCKER ===
+log "Проверка Docker..."
+if ! command -v docker >/dev/null 2>&1; then
+    error "Docker не установлен!"
+    echo ""
+    echo -e "${YELLOW}🔧 Установи Docker:${NC}"
+    echo -e "   ${GREEN}curl -fsSL https://get.docker.com | sh${NC}"
+    echo -e "   ${GREEN}sudo usermod -aG docker \$USER${NC}"
+    echo -e "   ${GREEN}newgrp docker${NC}"
+    echo ""
+    echo -e "${YELLOW}📖 Или скачай Docker Desktop:${NC}"
+    echo -e "   https://www.docker.com/products/docker-desktop/"
+    exit 1
+fi
+info "Docker установлен ✅"
 
-    # Проверяем, работает ли Docker
-    if ! docker ps >/dev/null 2>&1; then
-        warn "Недостаточно прав для Docker!"
-        
-        # Проверяем, есть ли пользователь в группе docker
-        if groups $USER | grep -q docker; then
-            warn "Вы уже в группе docker, но изменения не применились."
-            echo ""
-            echo -e "${YELLOW}🔄 Выполните команду и запустите скрипт снова:${NC}"
-            echo -e "   ${GREEN}newgrp docker${NC}"
-            echo -e "   ${GREEN}./start.sh${NC}"
-            echo ""
-            echo -e "${YELLOW}💡 Или просто перезапустите терминал${NC}"
-            exit 1
-        else
-            warn "Добавляем пользователя $USER в группу docker..."
-            sudo usermod -aG docker $USER
-            echo ""
-            info "Пользователь добавлен в группу docker ✅"
-            echo ""
-            echo -e "${YELLOW}🔄 Для применения изменений выполните:${NC}"
-            echo -e "   ${GREEN}newgrp docker${NC}"
-            echo -e "   ${GREEN}./start.sh${NC}"
-            echo ""
-            echo -e "${YELLOW}💡 Или просто перезапустите терминал${NC}"
-            exit 0
-        fi
+# === ПРОВЕРКА ЗАПУЩЕН ЛИ DOCKER ===
+if ! docker info >/dev/null 2>&1; then
+    error "Docker не запущен!"
+    echo ""
+    echo -e "${YELLOW}🔧 Запусти Docker:${NC}"
+    echo -e "   ${GREEN}sudo systemctl start docker${NC}"
+    echo -e "   ${GREEN}sudo systemctl enable docker${NC}"
+    echo ""
+    echo -e "${YELLOW}💡 Или открой Docker Desktop${NC}"
+    exit 1
+fi
+info "Docker запущен ✅"
+
+# === ПРОВЕРКА ПРАВ DOCKER ===
+if ! docker ps >/dev/null 2>&1; then
+    warn "Недостаточно прав для Docker!"
+    
+    if groups $USER | grep -q docker; then
+        warn "Вы уже в группе docker, но изменения не применились."
+        echo ""
+        echo -e "${YELLOW}🔄 Выполните:${NC}"
+        echo -e "   ${GREEN}newgrp docker${NC}"
+        echo -e "   ${GREEN}./start.sh${NC}"
+        exit 1
+    else
+        warn "Добавляем пользователя $USER в группу docker..."
+        sudo usermod -aG docker $USER
+        echo ""
+        info "Пользователь добавлен в группу docker ✅"
+        echo ""
+        echo -e "${YELLOW}🔄 Выполните:${NC}"
+        echo -e "   ${GREEN}newgrp docker${NC}"
+        echo -e "   ${GREEN}./start.sh${NC}"
+        exit 0
     fi
+fi
+info "Права Docker OK ✅"
 
-    # Если всё ок — запускаем через Docker
-    log "Запуск через Docker..."
+# === ЗАПУСК ===
+if [ -f "docker-compose.yml" ]; then
+    log "Запуск через Docker Compose..."
     docker compose up -d
     echo ""
     echo -e "${GREEN}╔════════════════════════╗${NC}"
@@ -72,7 +94,6 @@ log "Нативный запуск..."
 command -v go >/dev/null || { error "Go не найден"; exit 1; }
 command -v node >/dev/null || { error "Node не найден"; exit 1; }
 
-# Запуск бэкенда
 cd "$PROJECT_DIR/backend"
 export DATABASE_URL="postgres://todo_user:todo_pass@localhost:5432/todo_db"
 go run main.go > "$LOG_DIR/backend.log" 2>&1 &
@@ -80,7 +101,6 @@ BACKEND_PID=$!
 sleep 2
 info "Бэкенд на порту 8080 ✅"
 
-# Запуск фронтенда
 cd "$PROJECT_DIR/frontend"
 [ ! -d "node_modules" ] && npm install --silent
 npm run start > "$LOG_DIR/frontend.log" 2>&1 &
