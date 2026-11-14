@@ -133,10 +133,17 @@ cd todo-manager
 
 Бэкенд: http://localhost:8080
 
+## Code review
+
+Проект прошёл внешний code review с воспроизведением багов HTTP-запросами
+и тестами. Отчёт: [docs/REVIEW.md](docs/REVIEW.md).
+
+- найдено **15 проблем** (2 критичных, 8 средних, 5 мелких);
+- **10 исправлено** патчем с 7 тестами — [PR #1](https://github.com/dmironovru/todo-manager/pull/1);
+- главный баг: галочка «выполнено» слетала при переименовании задачи (PUT перезаписывал `completed`);
+- чистка репозитория (удалён бинарник 14.6 МБ, битые сабмодули) — [PR #2](https://github.com/dmironovru/todo-manager/pull/2);
+- compose: убран `version`, возвращён healthcheck, убран мёртвый `REACT_APP_API_URL` — [PR #3](https://github.com/dmironovru/todo-manager/pull/3).
+
 👤 Автор
 Дмитрий Миронов
 GitHub: dmironovru
-Website: dmitrymironov.ru
-
-📄 Лицензия
-MIT License
