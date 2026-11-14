@@ -7,8 +7,11 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
+	"unicode/utf8"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -21,11 +24,11 @@ type Task struct {
 var db *pgxpool.Pool
 
 func main() {
-	// Берём строку подключения из переменной окружения
+	// Берём строку подключения из переменной окружения.
+	// Никаких зашитых паролей в коде: репозиторий публичный.
 	connString := os.Getenv("DATABASE_URL")
 	if connString == "" {
-		// fallback для локального запуска (вне Docker)
-		connString = "postgres://todo_user:todo123321odot@localhost:5432/todo_db"
+		log.Fatal("DATABASE_URL не задан. Пример: DATABASE_URL='postgres://user:pass@localhost:5432/todo_db' ./todo-server")
 	}
 
 	log.Printf("Connecting to database...")
@@ -68,7 +71,26 @@ func main() {
 	http.HandleFunc("DELETE /api/tasks", corsMiddleware(clearTasks))
 
 	log.Println("Server started on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	srv := &http.Server{
+		Addr:              ":8080",
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      15 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+	log.Fatal(srv.ListenAndServe())
+}
+
+// maxTitleLen — предел длины названия, чтобы TEXT не превращался в способ залить мегабайты.
+const maxTitleLen = 500
+
+// normalizeTitle обрезает пробелы и проверяет, что название не пустое и не слишком длинное.
+func normalizeTitle(s string) (string, bool) {
+	s = strings.TrimSpace(s)
+	if s == "" || utf8.RuneCountInString(s) > maxTitleLen {
+		return "", false
+	}
+	return s, true
 }
 
 // initDB создаёт таблицу tasks, если она не существует
@@ -113,8 +135,17 @@ func getTasks(w http.ResponseWriter, r *http.Request) {
 	tasks := []Task{}
 	for rows.Next() {
 		var t Task
-		rows.Scan(&t.ID, &t.Title, &t.Completed)
+		if err := rows.Scan(&t.ID, &t.Title, &t.Completed); err != nil {
+			log.Println("Scan error:", err)
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			return
+		}
 		tasks = append(tasks, t)
+	}
+	if err := rows.Err(); err != nil {
+		log.Println("Rows error:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tasks)
@@ -124,7 +155,12 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Title string `json:"title"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Title == "" {
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+	title, ok := normalizeTitle(req.Title)
+	if !ok {
 		http.Error(w, "Invalid title", http.StatusBadRequest)
 		return
 	}
@@ -132,7 +168,7 @@ func createTask(w http.ResponseWriter, r *http.Request) {
 	var task Task
 	err := db.QueryRow(context.Background(),
 		"INSERT INTO tasks (title) VALUES ($1) RETURNING id, title, completed",
-		req.Title).Scan(&task.ID, &task.Title, &task.Completed)
+		title).Scan(&task.ID, &task.Title, &task.Completed)
 
 	if err != nil {
 		log.Println("Database error:", err)
@@ -153,34 +189,46 @@ func updateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Указатели, чтобы отличить «поле не прислали» от «прислали нулевое значение».
+	// Раньше Completed был bool и PUT {title: ...} молча сбрасывал галочку в false.
 	var req struct {
-		Title     string `json:"title"`
-		Completed bool   `json:"completed"`
+		Title     *string `json:"title"`
+		Completed *bool   `json:"completed"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
-	if req.Title != "" {
-		_, err = db.Exec(context.Background(),
-			"UPDATE tasks SET title=$1 WHERE id=$2", req.Title, id)
-		if err != nil {
-			log.Println("Update title error:", err)
-			http.Error(w, "Failed to update title", http.StatusInternalServerError)
+	var title *string
+	if req.Title != nil {
+		normalized, ok := normalizeTitle(*req.Title)
+		if !ok {
+			http.Error(w, "Invalid title", http.StatusBadRequest)
 			return
 		}
+		title = &normalized
 	}
 
-	_, err = db.Exec(context.Background(),
-		"UPDATE tasks SET completed=$1 WHERE id=$2", req.Completed, id)
+	// Один атомарный запрос вместо двух: COALESCE оставляет поле без изменений, если пришёл NULL.
+	var task Task
+	err = db.QueryRow(context.Background(),
+		"UPDATE tasks SET title = COALESCE($1, title), completed = COALESCE($2, completed) WHERE id = $3 RETURNING id, title, completed",
+		title, req.Completed, id).Scan(&task.ID, &task.Title, &task.Completed)
+
+	if err == pgx.ErrNoRows {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
 	if err != nil {
-		log.Println("Update status error:", err)
-		http.Error(w, "Failed to update status", http.StatusInternalServerError)
+		log.Println("Update error:", err)
+		http.Error(w, "Failed to update task", http.StatusInternalServerError)
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(task)
 }
 
 func deleteTask(w http.ResponseWriter, r *http.Request) {
@@ -191,8 +239,13 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec(context.Background(), "DELETE FROM tasks WHERE id=$1", id)
+	tag, err := db.Exec(context.Background(), "DELETE FROM tasks WHERE id=$1", id)
 	if err != nil {
+		log.Println("Delete error:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	if tag.RowsAffected() == 0 {
 		http.Error(w, "Task not found", http.StatusNotFound)
 		return
 	}
@@ -202,7 +255,8 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 func clearTasks(w http.ResponseWriter, r *http.Request) {
 	_, err := db.Exec(context.Background(), "DELETE FROM tasks")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("Clear error:", err)
+		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
